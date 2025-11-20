@@ -289,14 +289,5 @@ Powered by Anthropic Claude 3.5 Sonnet
 ---
 
 <p align="center">
-  <img src="https://img.shields.io/badge/🏆_5th_Place-UW_ClaudeHacks_2024-ffd700?style=for-the-badge" alt="5th Place - UW ClaudeHacks 2024">
-</p>
-
-<p align="center">
-  <strong>🎉 Finalist at UW-Madison ClaudeHacks 2024 🎉</strong>
-</p>
-
-<p align="center">
-  Recognized for innovative multi-agent AI architecture and measurable impact on student experience.<br>
-  Competed against teams from across the University of Wisconsin-Madison.
+  <img src="https://img.shields.io/badge/🏆_5th_Place-UW_ClaudeHacks_2024-ffd700?style=for-the-badge" alt="Honorable Mention - UW ClaudeHacks 2025">
 </p>
