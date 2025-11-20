@@ -20,11 +20,11 @@ load_dotenv()
 
 app = FastAPI(title="Office Hours Oracle")
 
-# CORS for frontend
+# CORS for frontend - allow all origins for demo (hackathon only!)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:3000"],
-    allow_credentials=True,
+    allow_origins=["*"],  # Allow all origins for hackathon demo
+    allow_credentials=False,  # Must be False when allow_origins is "*"
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -277,6 +277,148 @@ async def get_metrics():
         "estimated_time_saved_minutes": estimated_time_saved,
         "knowledge_base_size": len(db.kb_entries)
     }
+
+
+# ============================================================================
+# Simulation Endpoints
+# ============================================================================
+
+@app.post("/api/simulate/generate-students")
+async def generate_simulation_students(count: int = 30):
+    """
+    Generate realistic student scenarios using Claude for simulation mode
+    """
+    from claude_client import client, MODEL
+
+    prompt = f"""Generate {count} realistic student help requests for UW-Madison CS office hours during midterm week.
+
+Include a mix of:
+- CS400 (Data Structures): linked lists, trees, hash tables, recursion
+- CS577 (Algorithms): dynamic programming, graph algorithms, NP-completeness
+
+For each student, provide:
+- course: "CS400" or "CS577"
+- question: brief description (10-20 words)
+- complexity: 1-5 (1=quick question, 5=deep conceptual)
+- patience: 1-10 (1=will leave quickly, 10=very patient)
+- stressLevel: 1-10 (it's midterm week!)
+
+Return ONLY a JSON array with exactly {count} objects, no other text. Example format:
+{{"course": "CS400", "question": "Help with BST deletion", "complexity": 3, "patience": 6, "stressLevel": 7}}"""
+
+    try:
+        message = client.messages.create(
+            model=MODEL,
+            max_tokens=2000,
+            messages=[{"role": "user", "content": prompt}]
+        )
+
+        content = message.content[0].text
+        students = json.loads(content)
+
+        return {"students": students, "count": len(students)}
+    except Exception as e:
+        print(f"Error generating students: {e}")
+        # Return fallback data
+        return {"students": [], "count": 0, "error": str(e)}
+
+
+@app.post("/api/simulate/decide-action")
+async def simulate_student_behavior(
+    student_id: int,
+    wait_time: float,
+    patience: int,
+    question: str,
+    ai_enabled: bool = False
+):
+    """
+    Use Claude to simulate student behavior based on wait time and patience
+    """
+    from claude_client import client, MODEL
+
+    if not ai_enabled:
+        # Simple logic without AI
+        if wait_time > patience:
+            return {"action": "leave", "reason": "Exceeded patience threshold"}
+        return {"action": "stay", "reason": "Still patient"}
+
+    prompt = f"""You are simulating student behavior in office hours during midterm week.
+
+Student Info:
+- ID: {student_id}
+- Question: {question}
+- Wait time: {wait_time:.1f} minutes
+- Patience level: {patience}/10
+
+Consider:
+- It's midterm week (high stress)
+- They need help urgently
+- Other responsibilities (study, exams, assignments)
+
+Should this student: stay, leave, or get_frustrated?
+
+Return ONLY a JSON object with:
+{{"action": "stay|leave|get_frustrated", "reason": "brief explanation"}}"""
+
+    try:
+        message = client.messages.create(
+            model=MODEL,
+            max_tokens=100,
+            messages=[{"role": "user", "content": prompt}]
+        )
+
+        content = message.content[0].text
+        result = json.loads(content)
+        return result
+    except Exception as e:
+        print(f"Error in behavior simulation: {e}")
+        return {"action": "stay", "reason": "Error in simulation"}
+
+
+@app.post("/api/simulate/select-next")
+async def simulate_ai_selection(students: List[dict]):
+    """
+    Use Claude to intelligently select the next student to help
+    """
+    from claude_client import client, MODEL
+
+    if not students or len(students) == 0:
+        return {"selected_id": None, "reason": "No students in queue"}
+
+    # Limit to first 10 for performance
+    students_info = students[:10]
+
+    prompt = f"""You are an AI office hours coordinator. Select the best student to help next.
+
+Available students:
+{json.dumps(students_info, indent=2)}
+
+Consider:
+- Wait time (fairness)
+- Patience level (prevent students from leaving)
+- Complexity (balance quick wins vs deep problems)
+- Course balance
+
+Return ONLY a JSON object:
+{{"selected_id": <student_id>, "reason": "brief explanation of why this student"}}"""
+
+    try:
+        message = client.messages.create(
+            model=MODEL,
+            max_tokens=150,
+            messages=[{"role": "user", "content": prompt}]
+        )
+
+        content = message.content[0].text
+        result = json.loads(content)
+        return result
+    except Exception as e:
+        print(f"Error in AI selection: {e}")
+        # Fallback: select first student
+        return {
+            "selected_id": students[0].get("id") if students else None,
+            "reason": "Fallback to FIFO (error in AI)"
+        }
 
 
 # ============================================================================

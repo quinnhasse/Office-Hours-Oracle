@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Office Hours Chaos Simulation - UW Madison</title>
+    <link rel="stylesheet" href="chaos.css">
+</head>
+<body>
+    <div class="header">
+        <h1>🔥 Office Hours Oracle - Midterm Week Simulation 🔥</h1>
+        <div id="demoStatus" class="demo-status" style="display: none;">
+            <div class="demo-progress">
+                <div class="demo-step" id="demoStep">Initializing...</div>
+                <div class="demo-timer" id="demoTimer"></div>
+            </div>
+        </div>
+        <div class="control-panel">
+            <button id="autoDemo" class="auto-demo-btn">🎬 AUTO DEMO (2 MIN)</button>
+            <button id="startChaos" class="chaos-btn">START CHAOS SIMULATION</button>
+            <button id="activateAI" class="ai-btn" disabled>🧠 ACTIVATE CLAUDE AI</button>
+            <button id="reset" class="reset-btn">RESET</button>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <!-- LEFT: Visualization -->
+        <div class="simulation-view">
+            <h2>Queue Visualization</h2>
+            <div class="queue-zones">
+                <div class="zone waiting-zone">
+                    <h3>Waiting Queue</h3>
+                    <div id="waitingZone" class="student-container"></div>
+                    <div class="zone-count">Students: <span id="waitingCount">0</span></div>
+                </div>
+                <div class="zone ta-zone">
+                    <h3>With TA</h3>
+                    <div id="taZone" class="student-container"></div>
+                    <div class="zone-count">Active: <span id="activeCount">0</span></div>
+                </div>
+                <div class="zone done-zone">
+                    <h3>Helped</h3>
+                    <div id="doneZone" class="student-container"></div>
+                    <div class="zone-count">Completed: <span id="doneCount">0</span></div>
+                </div>
+                <div class="zone left-zone">
+                    <h3>Gave Up 💔</h3>
+                    <div id="leftZone" class="student-container"></div>
+                    <div class="zone-count">Lost: <span id="leftCount">0</span></div>
+                </div>
+            </div>
+            <canvas id="particleCanvas"></canvas>
+        </div>
+
+        <!-- RIGHT: Metrics -->
+        <div class="metrics-view">
+            <h2>Real-Time Metrics</h2>
+
+            <div class="metric-card critical">
+                <div class="metric-label">Current Wait Time</div>
+                <div class="metric-value" id="avgWaitTime">0</div>
+                <div class="metric-unit">minutes</div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-label">Students in Queue</div>
+                <div class="metric-value" id="queueSize">0</div>
+                <div class="metric-unit">students</div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-label">TA Stress Level</div>
+                <div class="metric-value" id="taStress">0</div>
+                <div class="metric-unit">/ 10</div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-label">Student Satisfaction</div>
+                <div class="metric-value" id="satisfaction">100</div>
+                <div class="metric-unit">%</div>
+            </div>
+
+            <div class="ai-status" id="aiStatus">
+                <h3>AI Status: <span id="aiMode">OFFLINE</span></h3>
+                <div id="aiDecisions"></div>
+            </div>
+
+            <div class="comparison-box" id="comparisonBox" style="display: none;">
+                <h3>🎯 AI Impact</h3>
+                <div class="comparison-stat">
+                    <strong>Before AI:</strong> <span id="beforeWait">--</span> min wait
+                </div>
+                <div class="comparison-stat">
+                    <strong>With AI:</strong> <span id="afterWait">--</span> min wait
+                </div>
+                <div class="improvement">
+                    <strong>Improvement:</strong> <span id="improvement">--</span>%
+                </div>
+            </div>
+
+            <div class="event-log">
+                <h3>Event Log</h3>
+                <div id="eventLog"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="simulator.js"></script>
+</body>
+</html>
