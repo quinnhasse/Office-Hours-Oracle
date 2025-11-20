@@ -9,7 +9,7 @@
 [![WebSocket](https://img.shields.io/badge/WebSocket-Real--time-4a90e2)](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API)
 
 <p align="center">
-  <strong>Reducing wait times and improving student outcomes through multi-agent AI orchestration</strong>
+  <img src="Office Hours Oracle.png" width="60%" alt="Office Hours Oracle Banner">
 </p>
 
 ## Overview
