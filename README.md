@@ -282,7 +282,7 @@ MIT
 
 ## Credits
 
-Built for UW-Madison ClaudeHacks 2024 by Quinn Hasse
+Built for UW-Madison ClaudeHacks 2025 by Quinn Hasse and Cole Parker
 
 Powered by Anthropic Claude 3.5 Sonnet
 
